@@ -19,7 +19,6 @@ xtraining$Subject <- subject_train[,]
 xtesting = read.table("./test/X_test.txt",header=FALSE)
 ytesting = read.table("./test/y_test.txt",header=FALSE)
 
-
 ##Extract subjects
 subject_test <- read.table("./test/subject_test.txt",header=FALSE)
 
@@ -34,12 +33,11 @@ xtesting$Subject <- subject_test[,]
 ##Merge training and testing
 xfull <- rbind(xtraining,xtesting) #10299 records
 
-
 ##Extract features
 features <- read.table("./features.txt",header=FALSE)
 
 ##Regex match for mean and std
-matchvector <- c(".*mean\\(\\).*-X$", ".*std\\(\\).*-X$")
+matchvector <- c(".*mean\\(\\)", ".*std\\(\\)")
 
 ##Vector of matches names
 matches <- unique(grep(paste(matchvector,collapse="|"), features$V2, value=TRUE))
@@ -56,13 +54,16 @@ colnames(activity) <- c("ActivityID","Activity")
 
 ##Merge two tables
 mergedtable <- merge(filteredmatches,activity,by="ActivityID")
-mergedtable <- mergedtable[,2:19]
+mergedtable <- mergedtable[,2:69]
 
 ##Tidy dataset
-tidydata <- aggregate(mergedtable[,1:16], list(mergedtable$Subject,mergedtable$Activity), mean)
+tidydata <- aggregate(mergedtable[,1:66], list(mergedtable$Subject,mergedtable$Activity), mean)
 
 ##Assign colnames
 colnames(tidydata) <- c("Subject", "Activity",unique(grep(paste(matchvector,collapse="|"), features$V2, value=TRUE)))
 
 ##Write to a file, suppress row names
-write(tidydata, "tidydata.txt", row.names=FALSE, sep="\t")
+write.table(tidydata, "tidydata.txt", row.names=FALSE, sep="\t")
+
+
+
